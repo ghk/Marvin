@@ -1,0 +1,85 @@
+request/response:
+    [header1 header2][type][length][message][crc]
+
+type:
+    0: ping
+    1: configure
+    2: fetch
+    3: command
+
+type 0:
+    request: 0
+    response: 0 header1 header2
+
+type 1:
+    undefined
+
+type 2:
+    request: [32 bit digital sensor flag] [16 bit analog sensor flag] [8 bit led state flag] [8 bit buzzer state flag] [8 bit motor state flag] [8 bit servo state flag]
+    response: [32 bit loop count] [32 bit loop timestamp] [32 bit digital sensor is active flag] [32 bit digital sensor reading] [x byte analog sensor reading] [x byte servo state reading] [x byte motor state reading]
+
+type 3:
+    request: [8 byte - number of commands] [command lists]
+    response: [8 byte number of unaccepted commands][8 byte x number of unaccepted commands of error code]
+
+    command:
+        [8 byte command_type][8 byte length][command]
+    
+    command_type:
+        1: led
+        2: buzzer
+        3: motor
+        4: servo
+
+    led command:
+        [1 byte which led][1 byte value]
+
+    buzzer command:
+        [1 byte which buzzer] [2 byte frequency] [4 byte expired time]
+        if frequency is 0: then stop buzzerring
+
+    motor command:
+        [1 byte which motor][1 byte speed] [4 byte expired time]
+        
+    servo command:
+        [1 byte which servo][1 byte position]
+
+
+
+--------- marvin communication state -----
+w waiting
+r reading
+
+
+wait
+    send non header
+discard buffer
+send error
+wait
+    send non header
+discard buffer
+send error
+wait
+
+wait 2 byte
+    send header
+    send length
+read
+state: reading
+wait length byte
+    send a byte
+wait
+    send length - a byte
+read
+respond
+
+---- error code ----
+1 non header sent
+2 timed out
+3 length exceeded
+
+
+----- how the brain use it -----
+periodical_fetches
+
+

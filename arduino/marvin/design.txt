@@ -1,0 +1,51 @@
+
+marvin_comm:
+    communication
+
+
+marvin_state_t{
+    uint8[2] servos;
+    uint4[2] motors;
+    boolean[8] leds;
+    uint8[2] buzzers;
+
+    boolean[8] digitals_active;
+    boolean[8] digitals;
+    boolean[4] analogs_active;
+    uint16[4] analogs;
+}
+
+marvin_state_t marvin_state;
+
+
+marvin_motor_command_t{
+    uint4 speed;
+    uint8 expired_time;
+}
+
+marvin_buzzer_command_t{
+    uint8 frequency;
+    uint8 expired_time;
+}
+
+marvin_servo_command_t{
+    uint4 target;
+    uint8 last_increment_time;
+}
+
+marvin_command_t{
+    marvin_servo_command_t[2] servos;
+    marvin_motor_command_t[2] motors;
+    boolean[8] leds;
+    marvin_buzzer_command_t[2] buzzers;
+}
+
+marvin_act(){
+    marvin_run_motors();
+    marvin_run_servos();
+    marvin_run_leds();
+    marvin_run_buzzers();
+}
+
+marvin_sense(){
+}
